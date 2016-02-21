@@ -1,0 +1,52 @@
+#cloud-config
+
+timezone: Canada/Eastern
+apt_update: true
+hostname: osd2
+fqdn: osd2.lab.local
+manage_etc_hosts: true
+package_update: false
+ssh_pwauth: True
+
+users:
+  - name: osu
+    gecos: osu
+    groups: sudo
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    passwd: $6$m/ToT80gpHPZka$2EaO1TYTpEcDKwNe/wBP3jnINtGQxNv0c4AcsTTpKlihHC9I7r/yactnYZER6.yn0jRO8zP9oB8t.TlSz8atp.
+    lock-passwd: false
+
+  - name: cephuser
+    gecos: cephuser
+    groups: sudo
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    passwd: cephuser
+    lock-passwd: false
+
+runcmd:
+ - "echo 'datasource_list: [ None ]' | sudo -s tee /etc/cloud/cloud.cfg.d/90_dpkg.cfg"
+ - "sudo dpkg-reconfigure -f noninteractive cloud-init"
+ - apt-get -y install chrony xfsprogs htop git
+ - parted -s /dev/vdc mklabel gpt
+ - parted -s /dev/vdc mkpart primary xfs 0% 100%
+ - mkfs.xfs /dev/vdc -f
+ - parted -s /dev/vdd mklabel gpt
+ - parted -s /dev/vdd mkpart primary xfs 0% 100%
+ - mkfs.xfs /dev/vdd -f
+ - parted -s /dev/vde mklabel gpt
+ - parted -s /dev/vde mkpart primary xfs 0% 100%
+ - mkfs.xfs /dev/vde -f
+ - parted -s /dev/vdb mklabel gpt
+ - parted -s /dev/vdb mkpart primary 0% 33%
+ - parted -s /dev/vdb mkpart primary 34% 66%
+ - parted -s /dev/vdb mkpart primary 67% 100% 
+ - ntpdate 0.debian.pool.ntp.org
+ - hwclock --systohc
+ - service chrony restart
+ - su - osu
+ - cd /home/osu
+ - echo "user_data finished" > /home/osu/user_data.finished
+
+

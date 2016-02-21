@@ -1,0 +1,14 @@
+{
+  "files": [
+    {
+      "path": "/etc/network/interfaces.d/eth0.cfg",
+      "content_path": "/content/eth0.cfg"
+    },
+    {
+      "path": "/etc/network/interfaces.d/eth1.cfg",
+      "content_path": "/content/eth1.cfg"
+    }
+  ],
+  "uuid": "83679162-1378-4288-a2d4-70e13ec132aa"
+}
+
