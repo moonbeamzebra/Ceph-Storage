@@ -14,6 +14,8 @@ users:
     groups: sudo
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
+    # mkpasswd --method=SHA-512 --rounds=4096
+    #passwd: osu1
     passwd: $6$m/ToT80gpHPZka$2EaO1TYTpEcDKwNe/wBP3jnINtGQxNv0c4AcsTTpKlihHC9I7r/yactnYZER6.yn0jRO8zP9oB8t.TlSz8atp.
     lock-passwd: false
 
@@ -22,10 +24,23 @@ users:
     groups: sudo
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
-    passwd: cephuser
+    #passwd: cephuser
+    passwd: $6$rounds=4096$h.Xgb2VIzw0rPD$YBHZQw18JjuM80pm9fwbTsoUDNyF4765SIK.Tww9nCHAOyz5WSc/CHiaVqZfFuAMsmyK5HAPeaXcj.drq1JRq1
     lock-passwd: false
 
+write_files:
+  - path: /tmp/hosts
+    content: |
+        10.199.2.101 osd1
+        10.199.2.102 osd2
+        10.199.2.103 osd3
+        10.199.2.104 mon1
+        10.199.2.105 mon2
+        10.199.2.106 mon3
+        10.199.2.107 ceph-admin
+
 runcmd:
+ - cat /tmp/hosts >> /etc/hosts
  - "echo 'datasource_list: [ None ]' | sudo -s tee /etc/cloud/cloud.cfg.d/90_dpkg.cfg"
  - "sudo dpkg-reconfigure -f noninteractive cloud-init"
  - apt-get -y install chrony xfsprogs htop git
@@ -45,6 +60,8 @@ runcmd:
  - ntpdate 0.debian.pool.ntp.org
  - hwclock --systohc
  - service chrony restart
+ - apt-get update -y
+ - apt-get dist-upgrade -y
  - su - osu
  - cd /home/osu
  - echo "user_data finished" > /home/osu/user_data.finished

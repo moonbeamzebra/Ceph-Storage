@@ -2,8 +2,8 @@
 
 timezone: Canada/Eastern
 apt_update: true
-hostname: osd1
-fqdn: osd1.lab.local
+hostname: mon3
+fqdn: mon3.lab.local
 manage_etc_hosts: true
 package_update: false
 ssh_pwauth: True
@@ -44,19 +44,6 @@ runcmd:
  - "echo 'datasource_list: [ None ]' | sudo -s tee /etc/cloud/cloud.cfg.d/90_dpkg.cfg"
  - "sudo dpkg-reconfigure -f noninteractive cloud-init"
  - apt-get -y install chrony xfsprogs htop git
- - parted -s /dev/vdc mklabel gpt
- - parted -s /dev/vdc mkpart primary xfs 0% 100%
- - mkfs.xfs /dev/vdc -f
- - parted -s /dev/vdd mklabel gpt
- - parted -s /dev/vdd mkpart primary xfs 0% 100%
- - mkfs.xfs /dev/vdd -f
- - parted -s /dev/vde mklabel gpt
- - parted -s /dev/vde mkpart primary xfs 0% 100%
- - mkfs.xfs /dev/vde -f
- - parted -s /dev/vdb mklabel gpt
- - parted -s /dev/vdb mkpart primary 0% 33%
- - parted -s /dev/vdb mkpart primary 34% 66%
- - parted -s /dev/vdb mkpart primary 67% 100% 
  - ntpdate 0.debian.pool.ntp.org
  - hwclock --systohc
  - service chrony restart
